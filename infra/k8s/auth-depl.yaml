@@ -21,7 +21,6 @@ kind: Service
 metadata:
   name: auth-srv
 spec:
-  type: ClusterIP # This is the default type hence we don't need to specify, but here we have specified just to indicate
   selector:
     app: auth
   ports:
