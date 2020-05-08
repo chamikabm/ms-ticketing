@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { Password } from '../services/password';
 
 // An interface that describes the properties
 // that are required to creat a new User.
@@ -22,13 +23,25 @@ interface UserDoc extends mongoose.Document {
 
 const userSchema = new mongoose.Schema({
     email: {
-     type: String,
-     required: true,
+        type: String,
+        required: true,
     },
     password: {
-    type: String,
-    required: true,
+        type: String,
+        required: true,
     },
+});
+
+
+userSchema.pre('save', async function(done) {
+    if (this.isModified('password')) {
+        const hashed = await Password.toHash(this.get('password'));
+        this.set('password', hashed);
+    }
+
+    // After we are done with all the async work, we need to manually call this done()
+    // method, as the mongoose does not fully support async await featured in JS.
+    done();
 });
 
 userSchema.statics.build = (attrs: UserAttrs) => {
