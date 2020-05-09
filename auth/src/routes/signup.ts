@@ -23,7 +23,7 @@ router.post('/api/users/signup', [
 
         if (existingUser) {
             console.log('Email in use');
-            throw new BadRequestError('Email in user');
+            throw new BadRequestError('Email in use');
         }
 
         const user = User.build({ email, password });
