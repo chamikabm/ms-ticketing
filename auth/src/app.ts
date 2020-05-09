@@ -37,8 +37,13 @@ app.set('trust proxy', true);
 // But if we planing to store more sensitive data on cookie we need to encrypt in
 // such case.
 app.use(cookieSession({
-    signed: false, // Disable encryption on cookies.
-    secure: true, // Indicates whether the cookie is only to be sent over HTTPS
+    // Disable encryption on cookies.
+    signed: false,
+
+    // Indicates whether the cookie is only to be sent over HTTPS
+    // Also if true in node test env, we won't be able to test cookie in the test cases
+    // Hence we disable setting cookie only on HTTPS, when in test env.
+    secure: process.env.NODE_ENV !== 'test',
 }));
 
 app.use(currentUserRouter);
