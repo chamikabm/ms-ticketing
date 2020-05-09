@@ -34,9 +34,10 @@ router.post('/api/users/signup', [
 
     // Generate JWT
     const userJwt = jwt.sign({
-        id: user.id,
-        email: user.email,
-    }, 'chamika');
+            id: user.id,
+            email: user.email,
+        }, process.env.JWT_KEY! // Here ! tells to typescript compiler not to worry about this value being null or undefined.
+    );
 
     // Store it on session object
     // req.session.jwt = userJwt;
