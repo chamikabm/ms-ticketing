@@ -1,7 +1,6 @@
 import buildClient from '../api/build-client';
 
 const LandingPage = ({ currentUser }) => {
-  console.log('Im in the component. currentUser : ', currentUser);
   return <h1>{currentUser ? 'You are singed in.' : 'You are not singed in.' }</h1>;
 };
 

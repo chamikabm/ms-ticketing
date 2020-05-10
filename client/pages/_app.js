@@ -3,8 +3,6 @@ import buildClient from '../api/build-client';
 
 import Header from '../components/header';
 
-
-
 const AppComponent =  ({ Component, pageProps, currentUser }) => {
   return (
       <div>
@@ -33,7 +31,7 @@ AppComponent.getInitialProps = async appContext => {
   if(appContext.Component.getInitialProps) {
     // We manually invoke the respective Component's getInitialProps method by passing
     // component's context which comes with the AppContext as ctx.
-    pageProps = appContext.Component.getInitialProps(appContext.ctx);
+    pageProps = await appContext.Component.getInitialProps(appContext.ctx);
   }
 
   return {
