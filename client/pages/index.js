@@ -1,8 +1,8 @@
-import axios from 'axios';
+import buildClient from '../api/build-client';
 
 const LandingPage = ({ currentUser }) => {
   console.log('Im in the component. currentUser : ', currentUser);
-  return <h1>Landing Page</h1>;
+  return <h1>{currentUser ? 'You are singed in.' : 'You are not singed in.' }</h1>;
 };
 
 /**
@@ -42,46 +42,52 @@ const LandingPage = ({ currentUser }) => {
  *
  * @returns {{}}
  */
-LandingPage.getInitialProps = async ({ req }) => {
-  // This API call happens in the Server and Browser Based on how we render the page.
-  // 1. Page refresh --> call from server
-  // 2. Paste direct url on browser and hit enter --> call from server
-  // 3. Redirect from a different page --> call on the browser.
-  // https://www.udemy.com/course/microservices-with-node-js-and-react/learn/lecture/19122254#questions/10508840
-  if (typeof window === 'undefined') {
-    // Execute on the server.
+LandingPage.getInitialProps = async (context) => {
 
-    // Here URL should be different as we need to access the auth service (i.e auth-srv)
-    // through the ingress service(i.e ingress-nginx-controller) which is in a different
-    // namespace(i.e 'ingress-nginx') than the auth-srv belonging namespace(i.e : 'default')
-    // in kubernetes. Hence the URL should be have the format of:
-    // http://SERVICENAME.NAMESPACENAME.svc.cluster.local/YOURROUTE
-    //
-    // To view the available name spaces -->
-    // > kubectl get namespaces
-    // To view services belong to the ingress-nginx namespace -->
-    // > kubectl get services -n ingress-nginx
-    //
-    // In this case it will be:
-    // http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/users/currentuserap
-    const response = await axios.get(
-        'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/users/currentuser', {
-          // headers: {
-          //    Host: 'ticketing.dev', // Added this headers to by pass the nginx rules for 'host'
-          // }
+  // // This API call happens in the Server and Browser Based on how we render the page.
+  // // 1. Page refresh --> call from server
+  // // 2. Paste direct url on browser and hit enter --> call from server
+  // // 3. Redirect from a different page --> call on the browser.
+  // // https://www.udemy.com/course/microservices-with-node-js-and-react/learn/lecture/19122254#questions/10508840
+  // if (typeof window === 'undefined') {
+  //   // Execute on the server.
+  //
+  //   // Here URL should be different as we need to access the auth service (i.e auth-srv)
+  //   // through the ingress service(i.e ingress-nginx-controller) which is in a different
+  //   // namespace(i.e 'ingress-nginx') than the auth-srv belonging namespace(i.e : 'default')
+  //   // in kubernetes. Hence the URL should be have the format of:
+  //   // http://SERVICENAME.NAMESPACENAME.svc.cluster.local/YOURROUTE
+  //   //
+  //   // To view the available name spaces -->
+  //   // > kubectl get namespaces
+  //   // To view services belong to the ingress-nginx namespace -->
+  //   // > kubectl get services -n ingress-nginx
+  //   //
+  //   // In this case it will be:
+  //   // http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/users/currentuserap
+  //   const response = await axios.get(
+  //       'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/users/currentuser', {
+  //         // headers: {
+  //         //    Host: 'ticketing.dev', // Added this headers to by pass the nginx rules for 'host'
+  //         // }
+  //
+  //         // Following will forward all the request headers in the current request to the
+  //         // follow up request to the ingress nginx service, which will be passed to
+  //         // auth service at the end. Which mainly include the Cookie and the Above Host header.
+  //         headers: req.headers,
+  //       }
+  //   );
+  //   return response.data;
+  // } else {
+  //   // Execute on the browser.
+  //   const response = await axios.get('/api/users/currentuser');
+  //   return response.data;
+  // }
+  // Instead of above code, following code made using above as a reusable code.
+  const client = buildClient(context);
+  const { data } = await client.get('/api/users/currentuser');
 
-          // Following will forward all the request headers in the current request to the
-          // follow up request to the ingress nginx service, which will be passed to
-          // auth service at the end. Which mainly include the Cookie and the Above Host header.
-          headers: req.headers,
-        }
-    );
-    return response.data;
-  } else {
-    // Execute on the browser.
-    const response = await axios.get('/api/users/currentuser');
-    return response.data;
-  }
+  return data;
 };
 
 
