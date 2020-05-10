@@ -30,10 +30,19 @@ const LandingPage = ({ currentUser }) => {
  * These new data fetching methods allow you to have a granular
  * choice between static generation and server-side rendering.
  *
+ * getInitialProps receives a single argument called context,
+ * it's an object with the following properties:
+ *
+ * pathname - Current route. That is the path of the page in /pages
+ * query    - Query string section of URL parsed as an object
+ * asPath   - String of the actual path (including the query) shown in the browser
+ * req      - HTTP request object (server only)
+ * res      - HTTP response object (server only)
+ * err      - Error object if any error is encountered during the rendering
  *
  * @returns {{}}
  */
-LandingPage.getInitialProps = async () => {
+LandingPage.getInitialProps = async ({ req }) => {
   // This API call happens in the Server and Browser Based on how we render the page.
   // 1. Page refresh --> call from server
   // 2. Paste direct url on browser and hit enter --> call from server
@@ -57,9 +66,14 @@ LandingPage.getInitialProps = async () => {
     // http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/users/currentuserap
     const response = await axios.get(
         'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/users/currentuser', {
-          headers: {
-            Host: 'ticketing.dev', // Added this headers to by pass the nginx rules for 'host'
-          }
+          // headers: {
+          //    Host: 'ticketing.dev', // Added this headers to by pass the nginx rules for 'host'
+          // }
+
+          // Following will forward all the request headers in the current request to the
+          // follow up request to the ingress nginx service, which will be passed to
+          // auth service at the end. Which mainly include the Cookie and the Above Host header.
+          headers: req.headers,
         }
     );
     return response.data;
