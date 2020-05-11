@@ -1,11 +1,33 @@
 import express, { Request, Response } from 'express';
-import { requireAuth } from '@ms-ticketing/common';
+import { requireAuth, validateRequest } from '@ms-ticketing/common';
 import { body } from 'express-validator';
+import { Ticket } from '../models/ticket';
 
 const router = express.Router();
 
-router.post('/api/tickets', requireAuth, (req: Request, res: Response) => {
-    res.status(200).send();
+router.post('/api/tickets',
+    requireAuth, [
+        body('title').not().isEmpty()
+            .withMessage('Title is required'),
+        body('price').isFloat({ gt: 0 })
+            .withMessage('Price must be greater than 0'),
+    ], validateRequest,
+    async (req: Request, res: Response) => {
+    const { title, price } = req.body;
+
+    const ticket = Ticket.build({
+        title,
+        price,
+
+        // Here the 'currentUser' will not be null as it pass through
+        // 'requireAuth' and throws an error if it is not defined
+        // before it reached to this level.
+        userId: req.currentUser!.id,
+    });
+
+    await ticket.save();
+
+    res.status(201).send(ticket);
 });
 
 export { router as createTicketRouter };
