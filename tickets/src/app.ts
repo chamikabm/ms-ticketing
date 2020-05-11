@@ -3,7 +3,9 @@ import 'express-async-errors'; // Use to handle async error
 import { json } from 'body-parser';
 import cookieSession from 'cookie-session';
 
-import { NotFoundError, errorHandler } from '@ms-ticketing/common';
+import { NotFoundError, errorHandler, currentUser } from '@ms-ticketing/common';
+
+import { createTicketRouter } from './routes/new';
 
 const app = express();
 app.use(json({}));
@@ -38,7 +40,9 @@ app.use(cookieSession({
     // Hence we disable setting cookie only on HTTPS, when in test env.
     secure: process.env.NODE_ENV !== 'test',
 }));
+app.use(currentUser);
 
+app.use(createTicketRouter);
 
 // Send 404 for all not found routes, 'all' for all type of HTTP methods, GET, POST, DELETE etc.
 app.all('*', async () => {

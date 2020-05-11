@@ -16,6 +16,8 @@ spec:
         - name: auth
           image: chamika/auth
           env:
+            - name: MONGO_URI
+              value: 'mongodb://auth-mongo-srv:27017/auth' # Here 'auth' is the database name.
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:

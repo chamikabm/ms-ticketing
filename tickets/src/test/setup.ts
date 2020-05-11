@@ -1,12 +1,14 @@
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import request from 'supertest';
+import jwt from 'jsonwebtoken';
+
 import { app } from '../app';
 
 declare global {
     namespace NodeJS {
         interface Global {
-            signin(): Promise<string[]>
+            signin(): string[];
         }
     }
 }
@@ -38,16 +40,25 @@ afterAll(async () => {
 
 // Without this global thing, you can move these util test classes to a
 // separate helper file.
-global.signin = async () => {
-    const email = 'test@test.com';
-    const password = 'password';
+global.signin = () => {
+    // Build a JWT payload. { id, email }
+    const payload = {
+        id: 'sdfsdf',
+        email: 'test@test.com',
+    };
 
-    const authResponse = await request(app)
-        .post('/api/users/signup')
-        .send({ email, password })
-        .expect(201);
+    // Create JWT
+    const token = jwt.sign(payload,  process.env.JWT_KEY!);
 
-    const cookie = authResponse.get('Set-Cookie');
+    // Build Session Object. { jwt: MY_JWT }
+    const session = { jwt: token };
 
-    return cookie;
+    // Turn that session into JSON
+    const sessionJSON = JSON.stringify(session);
+
+    // Take JSON and encode it as base 64
+    const base64Session = Buffer.from(sessionJSON).toString('base64');
+
+    // Returns the string, that's the cookie with the encoded data.
+    return [`express:sess=${base64Session}`];
 }
