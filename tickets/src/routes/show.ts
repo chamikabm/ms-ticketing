@@ -1,6 +1,5 @@
 import express, { Request, Response } from 'express';
-import { requireAuth, validateRequest, NotFoundError } from '@ms-ticketing/common';
-import { body } from 'express-validator';
+import { NotFoundError } from '@ms-ticketing/common';
 import { Ticket } from '../models/ticket';
 
 const router = express.Router();
@@ -13,7 +12,7 @@ router.get('/api/tickets/:id', async (req: Request, res: Response) => {
         throw new NotFoundError();
     }
 
-    res.send(200);
+    res.send(ticket);
 });
 
 export { router as showTicketRouter }
