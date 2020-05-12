@@ -6,6 +6,7 @@ import cookieSession from 'cookie-session';
 import { NotFoundError, errorHandler, currentUser } from '@ms-ticketing/common';
 
 import { createTicketRouter } from './routes/new';
+import { showTicketRouter } from './routes/show';
 
 const app = express();
 app.use(json({}));
@@ -43,6 +44,7 @@ app.use(cookieSession({
 app.use(currentUser);
 
 app.use(createTicketRouter);
+app.use(showTicketRouter);
 
 // Send 404 for all not found routes, 'all' for all type of HTTP methods, GET, POST, DELETE etc.
 app.all('*', async () => {
