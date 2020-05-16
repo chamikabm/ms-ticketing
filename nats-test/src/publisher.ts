@@ -1,5 +1,9 @@
 import nats from 'node-nats-streaming';
 
+// This command will clear the previous command logs.
+// So that we will only have application specific logs.
+console.clear();
+
 // const client = nats.connect()
 // As a community convention for nasts streaming server clients are
 // referred to as 'stan', Hence let's use stan for client.
@@ -22,6 +26,6 @@ stan.on('connect', () => {
 
     stan.publish('ticker:created', dataString, () => {
         // This is a optional callback.
-        console.log('Event published!');
+        console.log('Event published!!');
     });
 });
