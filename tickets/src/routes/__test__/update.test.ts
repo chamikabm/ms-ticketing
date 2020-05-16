@@ -1,6 +1,7 @@
 import request from 'supertest';
 import mongoose from 'mongoose';
 import { app } from '../../app';
+import { natsWrapper } from '../../nats-wrapper';
 
 describe('Update Route', () => {
     it('Should return 404 if the ticket is not found for the given id.', async () => {
@@ -101,5 +102,30 @@ describe('Update Route', () => {
                 price: 45,
             })
             .expect(200);
+    });
+
+    it('Should publish ticket updated event.', async () => {
+        const cookie = global.signin();
+
+        const response = await request(app)
+            .post('/api/tickets')
+            .set('Cookie',cookie)
+            .send({
+                title: 'lkjgjkgd',
+                price: 20,
+            })
+            .expect(201);
+        const createdTicket = response.body;
+
+        await request(app)
+            .put(`/api/tickets/${createdTicket.id}`)
+            .set('Cookie', cookie)
+            .send({
+                title: '12345678',
+                price: 45,
+            })
+            .expect(200);
+
+        expect(natsWrapper.client.publish).toHaveBeenCalled();
     });
 });

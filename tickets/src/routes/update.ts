@@ -7,6 +7,11 @@ import { Ticket } from '../models/ticket';
 import { natsWrapper } from '../nats-wrapper';
 import { TicketUpdatedPublisher } from '../events/publishers/ticket-updated-publisher';
 
+// This is same as importing the nats-wrapper.
+// jest.mock('../../nats-wrapper');
+// Instead of doing this on each file where it uses the nats-wrapper, we can
+// put this into `test` setup.ts tile.
+
 const router = express.Router();
 
 router.put('/api/tickets/:id',
