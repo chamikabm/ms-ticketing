@@ -24,7 +24,7 @@ stan.on('connect', () => {
     // Hence we need to transform above data into plain text string using JSON.stringify()
     const dataString = JSON.stringify(data);
 
-    stan.publish('ticker:created', dataString, () => {
+    stan.publish('ticket:created', dataString, () => {
         // This is a optional callback.
         console.log('Event published!!');
     });
