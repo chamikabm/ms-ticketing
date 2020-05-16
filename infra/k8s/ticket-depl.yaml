@@ -16,6 +16,14 @@ spec:
         - name: tickets
           image: chamika/tickets
           env:
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name # This instruct kubernetes to use the POD Name as the the NATS Client Id.
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: ticketing
             - name: MONGO_URI
               value: 'mongodb://tickets-mongo-srv:27017/tickets' # Here 'tickets' is the database name.
             - name: JWT_KEY
