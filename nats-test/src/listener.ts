@@ -23,7 +23,14 @@ stan.on('connect', () => {
     });
 
     const options = stan.subscriptionOptions()
+        // NATS waits for clients to Ack each event, otherwise it will replay after Ack Wait time.
         .setManualAckMode(true)
+
+        // Deliver all messages from the beginning on running first time.
+        .setDeliverAllAvailable()
+
+        // Deliver all messages which has not ack by the client on restart.
+        .setDurableName('order-service')
 
         // NATS server expect a ACK response from the corresponding client with in the time
         // period, if not it will replay the event to one of other existing client after this period of time.
@@ -42,9 +49,11 @@ stan.on('connect', () => {
             console.log(`Received event #${msg.getSequence()}, with data:${data}`);
         }
 
-        setTimeout(() => {
-            msg.ack();
-        }, 7*1000);
+        msg.ack();
+
+        // setTimeout(() => {
+        //     msg.ack();
+        // }, 7*1000);
     });
 });
 
