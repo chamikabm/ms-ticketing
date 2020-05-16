@@ -24,6 +24,9 @@ stan.on('connect', () => {
 
     const options = stan.subscriptionOptions()
         .setManualAckMode(true)
+
+        // NATS server expect a ACK response from the corresponding client with in the time
+        // period, if not it will replay the event to one of other existing client after this period of time.
         .setAckWait(6 * 1000);
 
     const subscription = stan.subscribe(
@@ -45,5 +48,21 @@ stan.on('connect', () => {
     });
 });
 
-process.on('SIGINT', () => stan.close());
-process.on('SIGTERM', () => stan.close());
+
+// These SIGINT and SIGTERM are not used in Windows
+// also these will not execute if we forcefully kill the running process
+// (i.e: Stopping running process by a Program Manager)
+// To tackle that scenario we need to use the health endpoint check.
+process.on('SIGINT', () => {
+    // Exit by CMD + C etc.
+    console.log('SIGINT Received!')
+    stan.close();
+});
+process.on('SIGTERM', () => {
+    // Restart
+    console.log('SIGTERM Received!')
+    stan.close();
+});
+
+// NATS Subscribers List
+// http://localhost:8222/streaming/channelsz?subs=1
