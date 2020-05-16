@@ -4,8 +4,8 @@ import { TicketsCreatedEvent } from './tickets-created-event';
 import { Subjects } from './subjects';
 
 export class TicketCreatedListener extends Listener<TicketsCreatedEvent> {
-    // subject: TicketsCreatedEvent['subject'] =  Subjects.TicketCreated;  Also works
-    subject: Subjects.TicketCreated =  Subjects.TicketCreated;
+    subject: TicketsCreatedEvent['subject'] =  Subjects.TicketCreated;
+    // subject: Subjects.TicketCreated =  Subjects.TicketCreated; // Also correct
     queueGroupName = 'payments-service';
 
     onMessage(data: TicketsCreatedEvent['data'], msg: Message): void {

@@ -1,4 +1,5 @@
 import nats from 'node-nats-streaming';
+import { TicketCreatedPublisher } from './events/ticket-created-publisher';
 
 // This command will clear the previous command logs.
 // So that we will only have application specific logs.
@@ -22,10 +23,13 @@ stan.on('connect', () => {
 
     // We only can strings or text data in NATS
     // Hence we need to transform above data into plain text string using JSON.stringify()
-    const dataString = JSON.stringify(data);
+    // const dataString = JSON.stringify(data);
+    //
+    // stan.publish('ticket:created', dataString, () => {
+    //     // This is a optional callback.
+    //     console.log('Event published!!');
+    // });
 
-    stan.publish('ticket:created', dataString, () => {
-        // This is a optional callback.
-        console.log('Event published!!');
-    });
+    // All above the code now being handled by the Publisher class below.
+    new TicketCreatedPublisher(stan).publish(data);
 });
