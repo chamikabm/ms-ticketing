@@ -19,6 +19,7 @@ stan.on('connect', async () => {
         id: '123',
         title: 'concert',
         price: 30,
+        userId: 'asfaf',
     };
 
     // We only can strings or text data in NATS
