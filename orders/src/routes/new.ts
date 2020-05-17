@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
 import express, { Request, Response } from 'express';
-import { BadRequestError, requireAuth, validateRequest } from '@ms-ticketing/common';
+import {
+    BadRequestError, NotFoundError, requireAuth, validateRequest,
+} from '@ms-ticketing/common';
 import { body } from 'express-validator';
 import { Ticket } from '../models/ticket';
-import { NotFoundError } from '../../../common/src';
 import { Order, OrderStatus } from '../models/order';
 
 const EXPIRATION_WINDOW_SECONDS = 15 * 60; // 15 minutes in seconds.
@@ -13,16 +14,16 @@ const router = express.Router();
 router.post('/api/orders',
     requireAuth,
     [
-        body('title')
-            .not().isEmpty()
-            .custom(((input:string) => mongoose.Types.ObjectId.isValid(input)))
-            .withMessage('Valid ticket id must be provided.'),
-        body('price').isFloat({ gt: 0 })
-            .withMessage('Price must be greater than 0'),
+        body('ticketId')
+            .not()
+            .isEmpty()
+            .custom((input: string) => mongoose.Types.ObjectId.isValid(input))
+            .withMessage('TicketId must be provided'),
     ],
     validateRequest,
     async (req: Request, res: Response) => {
     const { ticketId } = req.body;
+    console.log('sdfsdf')
 
         // Find the ticket that the user trying to order in the database.
         const ticket = await Ticket.findById(ticketId);
