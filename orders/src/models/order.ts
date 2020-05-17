@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
-import { Ticket } from '../../../tickets/src/models/ticket';
 import { OrderStatus } from '@ms-ticketing/common';
+import { TicketDoc } from './ticket';
+
+// Re exporting this just to simply imports on the app, so that, Order and OrderSatus
+// will be import from the same file.
+export { OrderStatus };
 
 // An interface that describes the properties
 // that are required to creat a new order.
