@@ -6,6 +6,8 @@ import {
 import { body } from 'express-validator';
 import { Ticket } from '../models/ticket';
 import { Order, OrderStatus } from '../models/order';
+import { OrderCreatedPublisher } from '../../events/publishers/order-created-publisher';
+import { natsWrapper } from '../nats-wrapper';
 
 const EXPIRATION_WINDOW_SECONDS = 15 * 60; // 15 minutes in seconds.
 
@@ -68,6 +70,16 @@ router.post('/api/orders',
         await order.save();
 
         // Push an event saying that an order was created.
+        new OrderCreatedPublisher(natsWrapper.client).publish({
+            id: order.id,
+            status: order.status,
+            userId: order.userId,
+            expiresAt: order.expiresAt.toISOString(), // This will return the ISO time string in UTC time format.
+            ticket: {
+                id: ticket.id,
+                price: ticket.price,
+            }
+        });
 
         res.status(201).send(order);
 });
