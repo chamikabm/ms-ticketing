@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
 import { app } from '../../app';
-import { Ticket, TicketDoc } from '../../models/ticket';
+import { Ticket } from '../../models/ticket';
 import { Order, OrderStatus } from '../../models/order';
 
 describe('New Route', () => {
