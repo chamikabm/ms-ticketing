@@ -23,7 +23,6 @@ router.post('/api/orders',
     validateRequest,
     async (req: Request, res: Response) => {
     const { ticketId } = req.body;
-    console.log('sdfsdf')
 
         // Find the ticket that the user trying to order in the database.
         const ticket = await Ticket.findById(ticketId);
