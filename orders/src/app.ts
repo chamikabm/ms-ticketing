@@ -5,10 +5,10 @@ import cookieSession from 'cookie-session';
 
 import { NotFoundError, errorHandler, currentUser } from '@ms-ticketing/common';
 
-import { createTicketRouter } from './routes/new';
-import { showTicketRouter } from './routes/show';
-import { indexTicketRouter } from './routes';
-import { updateTicketRouter } from './routes/update';
+import { newOrderRouter } from './routes/new';
+import { showOrderRouter } from './routes/show';
+import { indexOrderRouter } from './routes/index';
+import { deleteOrderRouter } from './routes/delete';
 
 const app = express();
 app.use(json({}));
@@ -45,10 +45,10 @@ app.use(cookieSession({
 }));
 app.use(currentUser);
 
-app.use(createTicketRouter);
-app.use(showTicketRouter);
-app.use(indexTicketRouter);
-app.use(updateTicketRouter);
+app.use(indexOrderRouter);
+app.use(newOrderRouter);
+app.use(showOrderRouter);
+app.use(deleteOrderRouter);
 
 // Send 404 for all not found routes, 'all' for all type of HTTP methods, GET, POST, DELETE etc.
 app.all('*', async () => {
