@@ -49,4 +49,8 @@ describe('New Route', () => {
             .send({ ticketId: ticket.id })
             .expect(201);
     });
+
+    it.todo('Should emit order created event..', async () => {
+
+    });
 });
