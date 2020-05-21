@@ -25,5 +25,22 @@ describe('Ticket Model', () => {
 
         // Save the second fetched ticket and expect an error
         await expect(secondInstance!.save()).rejects.toBeTruthy();
-    })
+    });
+
+    it('Should increments the version number on multiple saves.', async () => {
+        // Create an instance of Ticket
+        const ticket = Ticket.build({
+            title: 'concert',
+            price: 5,
+            userId: '123',
+        });
+
+        // Save ticket to the database
+        await ticket.save();
+        expect(ticket.version).toEqual(0);
+
+        // Save ticket again to the database
+        await ticket.save();
+        expect(ticket.version).toEqual(1);
+    });
 });
