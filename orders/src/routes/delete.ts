@@ -1,7 +1,6 @@
 import express, { Request, Response } from 'express';
-import { NotAuthorizedError, requireAuth } from '@ms-ticketing/common';
+import { NotAuthorizedError, requireAuth, NotFoundError } from '@ms-ticketing/common';
 import { Order, OrderStatus } from '../models/order';
-import { NotFoundError } from '../../../common/src';
 import { OrderCancelledPublisher } from '../../events/publishers/order-cancelled-publisher';
 import { natsWrapper } from '../nats-wrapper';
 

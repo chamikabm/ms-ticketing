@@ -4,6 +4,7 @@ import { Order, OrderStatus } from './order';
 // An interface that describes the properties
 // that are required to creat a new ticket.
 interface TicketAttrs {
+    id: string,
     title: string,
     price: number,
 }
@@ -44,7 +45,10 @@ const ticketSchema = new mongoose.Schema({
 
 // This methods applicable to Model will be added to "statics" object
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
-    return new Ticket(attrs);
+    return new Ticket({
+        ...attrs,
+        _id: attrs.id,
+    });
 };
 
 // This methods applicable to Document will be added to "method" object

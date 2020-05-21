@@ -1,7 +1,6 @@
 import express, { Request, Response } from 'express';
-import { NotAuthorizedError, requireAuth } from '@ms-ticketing/common';
+import { NotAuthorizedError, requireAuth, NotFoundError } from '@ms-ticketing/common';
 import { Order } from '../models/order';
-import { NotFoundError } from '../../../common/src';
 
 const router = express.Router();
 
