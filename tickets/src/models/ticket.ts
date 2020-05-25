@@ -14,6 +14,7 @@ interface TicketDoc extends mongoose.Document {
     price: number,
     userId: string,
     version: number, // Added this to support custom version property name other than default '_v'
+    orderId?: string, // Here ? mark tells to type script this value can be either string or undefined.
 }
 
 interface TicketModel extends mongoose.Model<TicketDoc>{
@@ -32,6 +33,9 @@ const ticketSchema = new mongoose.Schema({
     userId: {
         type: String,
         required: true,
+    },
+    orderId: {
+        type: String,
     }
 }, {
     toJSON: {
