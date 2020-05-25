@@ -54,12 +54,25 @@ describe('Ticket Updated Lister', () => {
 
     it('Should ack the message.', async () => {
 
-        const { listener, data, ticket, message } = await setup();
+        const { listener, data, message } = await setup();
 
         // Call the onMessage function
         await listener.onMessage(data, message);
 
         // Write assertions to make sure that ack function is called
         expect(message.ack).toHaveBeenCalled();
+    });
+
+    it('Should call ack if the event has skipped version number.', async () => {
+        const { listener, data, ticket, message } = await setup();
+
+        // Update data version to future value.
+        data.version = 10;
+
+        // Call the onMessage function and expect an error
+        await expect(listener.onMessage(data, message)).rejects.toBeTruthy();
+
+        // Write assertions to make sure that ack function is not called
+        expect(message.ack).not.toHaveBeenCalled();
     });
 });

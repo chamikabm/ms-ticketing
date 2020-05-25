@@ -2,6 +2,9 @@ import mongoose from 'mongoose';
 import { OrderStatus } from '@ms-ticketing/common';
 import { TicketDoc } from './ticket';
 
+// This plugin used to handle concurrency [OCC - Optimistic Concurrency Control]
+import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
+
 // Re exporting this just to simply imports on the app, so that, Order and OrderSatus
 // will be import from the same file.
 export { OrderStatus };
@@ -22,6 +25,7 @@ interface OrderDoc extends mongoose.Document {
     status: OrderStatus,
     expiresAt: Date,
     ticket: TicketDoc,
+    version: number,
 }
 
 // An interface that describes the properties
@@ -56,6 +60,10 @@ const orderSchema = new mongoose.Schema({
         }
     }
 });
+
+// Tell mongoose to use the version as 'version' instead of default '_v' property.
+orderSchema.set('versionKey', 'version');
+orderSchema.plugin(updateIfCurrentPlugin);
 
 orderSchema.statics.build = (attrs: OrderAttrs) => {
     return new Order(attrs);

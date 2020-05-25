@@ -17,6 +17,7 @@ describe('New Route', () => {
 
     it('Should return an error if the ticket is already reserved.', async () => {
         const ticket = Ticket.build({
+            id: mongoose.Types.ObjectId().toHexString(),
             title: 'convert',
             price: 20,
         });
@@ -39,6 +40,7 @@ describe('New Route', () => {
 
     it('Should reserved a ticket successfully.', async () => {
         const ticket = Ticket.build({
+            id: mongoose.Types.ObjectId().toHexString(),
             title: 'convert',
             price: 20,
         });
@@ -53,6 +55,7 @@ describe('New Route', () => {
 
     it('Should emit order created event.', async () => {
         const ticket = Ticket.build({
+            id: mongoose.Types.ObjectId().toHexString(),
             title: 'convert',
             price: 20,
         });
