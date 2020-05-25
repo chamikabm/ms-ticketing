@@ -1,6 +1,6 @@
 import { TicketUpdatedListener } from '../ticket-updated-listener';
 import { natsWrapper } from '../../../nats-wrapper';
-import { TicketsUpdatedEvent } from '@ms-ticketing/common';
+import { TicketUpdatedEvent } from '@ms-ticketing/common';
 import mongoose from 'mongoose';
 import { Message } from 'node-nats-streaming';
 import { Ticket } from '../../../models/ticket';
@@ -18,7 +18,7 @@ const setup = async () => {
     await ticket.save();
 
     // Create fake data event
-    const data: TicketsUpdatedEvent['data'] = {
+    const data: TicketUpdatedEvent['data'] = {
         id: ticket.id,
         version: ticket.version + 1,
         title: 'new concert',

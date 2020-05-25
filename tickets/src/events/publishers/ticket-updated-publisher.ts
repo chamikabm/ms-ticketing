@@ -1,5 +1,5 @@
-import { Publisher, Subjects, TicketsUpdatedEvent } from '@ms-ticketing/common';
+import { Publisher, Subjects, TicketUpdatedEvent } from '@ms-ticketing/common';
 
-export class TicketUpdatedPublisher extends Publisher<TicketsUpdatedEvent>{
-    subject: TicketsUpdatedEvent["subject"] = Subjects.TicketUpdated;
+export class TicketUpdatedPublisher extends Publisher<TicketUpdatedEvent>{
+    subject: TicketUpdatedEvent["subject"] = Subjects.TicketUpdated;
 }

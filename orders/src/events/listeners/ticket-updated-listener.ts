@@ -1,13 +1,13 @@
 import { Message } from 'node-nats-streaming';
-import { Listener, Subjects, TicketsUpdatedEvent } from '@ms-ticketing/common';
+import { Listener, Subjects, TicketUpdatedEvent } from '@ms-ticketing/common';
 import { queueGroupName } from './queue-group-name';
 import { Ticket } from '../../models/ticket';
 
-export class TicketUpdatedListener extends Listener<TicketsUpdatedEvent> {
-    subject: TicketsUpdatedEvent["subject"] = Subjects.TicketUpdated;
+export class TicketUpdatedListener extends Listener<TicketUpdatedEvent> {
+    subject: TicketUpdatedEvent["subject"] = Subjects.TicketUpdated;
     queueGroupName: string = queueGroupName;
 
-    async onMessage(data: TicketsUpdatedEvent["data"], msg: Message): Promise<void> {
+    async onMessage(data: TicketUpdatedEvent["data"], msg: Message): Promise<void> {
         const { id, title, price, version } = data;
         // const ticket = await Ticket.findById(id);
         // Since we introduced new version property we can't use above query
