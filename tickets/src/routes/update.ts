@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import {
-    requireAuth, validateRequest, NotFoundError, NotAuthorizedError,
+    requireAuth, validateRequest, NotFoundError, NotAuthorizedError, BadRequestError,
 } from '@ms-ticketing/common';
 import { body } from 'express-validator';
 import { Ticket } from '../models/ticket';
@@ -30,6 +30,10 @@ router.put('/api/tickets/:id',
 
         if(ticket.userId !== req.currentUser!.id) {
             throw new NotAuthorizedError();
+        }
+
+        if(ticket.orderId) {
+            throw new BadRequestError('Can not edit a reserved ticket!');
         }
 
         ticket.set({
