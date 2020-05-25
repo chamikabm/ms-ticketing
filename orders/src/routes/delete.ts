@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { NotAuthorizedError, requireAuth, NotFoundError } from '@ms-ticketing/common';
 import { Order, OrderStatus } from '../models/order';
-import { OrderCancelledPublisher } from '../../events/publishers/order-cancelled-publisher';
+import { OrderCancelledPublisher } from '../events/publishers/order-cancelled-publisher';
 import { natsWrapper } from '../nats-wrapper';
 
 const router = express.Router();

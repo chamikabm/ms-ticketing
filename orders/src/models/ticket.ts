@@ -1,10 +1,14 @@
 import mongoose from 'mongoose';
 import { Order, OrderStatus } from './order';
 
+// This plugin used to handle concurrency [OCC - Optimistic Concurrency Control]
+import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
+
 // An interface that describes the properties
 // that are required to creat a new ticket.
 interface TicketAttrs {
     id: string,
+    version: number,
     title: string,
     price: number,
 }
@@ -14,6 +18,7 @@ interface TicketAttrs {
 export interface TicketDoc extends mongoose.Document {
     title: string,
     price: number,
+    version: number,
     isReserved(): Promise<boolean>,
 }
 
@@ -21,6 +26,7 @@ export interface TicketDoc extends mongoose.Document {
 // that a Ticket Model has.
 interface TicketModel extends mongoose.Model<TicketDoc> {
     build(attrs: TicketAttrs): TicketDoc,
+    findByEvent(event: { id: string, version: number }): Promise<TicketDoc | null>, // This is not the ideal name, but we try to find record for given id and version by a emitted event.
 }
 
 const ticketSchema = new mongoose.Schema({
@@ -43,11 +49,21 @@ const ticketSchema = new mongoose.Schema({
     }
 });
 
+// Tell mongoose to use the version as 'version' instead of default '_v' property.
+ticketSchema.set('versionKey', 'version');
+ticketSchema.plugin(updateIfCurrentPlugin);
+
 // This methods applicable to Model will be added to "statics" object
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
     return new Ticket({
         ...attrs,
         _id: attrs.id,
+    });
+};
+ticketSchema.statics.findByEvent = (event: { id: string, version: number }) => {
+    return Ticket.findOne({
+        _id: event.id,
+        version: event.version - 1,
     });
 };
 
