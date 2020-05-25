@@ -55,4 +55,29 @@ describe('Order Created Lister', () => {
         await listener.onMessage(data, message);
         expect(message.ack).toHaveBeenCalled();
     });
+
+    it('Should publishes a ticket updated event.', async () => {
+        const { message, data, ticket, listener } = await setup();
+
+        await listener.onMessage(data, message);
+
+        // When we call the above onMessage method on the created listener instance,
+        // behind the scene it will call the base listener's client publish method.
+        expect(natsWrapper.client.publish).toHaveBeenCalled();
+
+        // @ts-ignore
+        // Since natsWrapper is a mocked function when we running test,
+        // we can log it's parameter that we passed as below.
+        // console.log(natsWrapper.client.publish.mock.calls);
+
+        // When we access the mock.calls inside the jest mocked function, we get a
+        // typescript warning, to by pass we can add //@ts-ignore above the call as above,
+        // or we can wrap the call as below.
+        // console.log((natsWrapper.client.publish as jest.Mock).mock.calls);
+
+        const ticketUpdateData =
+            JSON.parse((natsWrapper.client.publish as jest.Mock).mock.calls[0][1]);
+
+        expect(data.id).toEqual(ticketUpdateData.orderId);
+    });
 });
