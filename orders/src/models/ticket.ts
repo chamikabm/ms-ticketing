@@ -8,7 +8,6 @@ import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 // that are required to creat a new ticket.
 interface TicketAttrs {
     id: string,
-    version: number,
     title: string,
     price: number,
 }
@@ -56,8 +55,9 @@ ticketSchema.plugin(updateIfCurrentPlugin);
 // This methods applicable to Model will be added to "statics" object
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
     return new Ticket({
-        ...attrs,
         _id: attrs.id,
+        title: attrs.title,
+        price: attrs.price,
     });
 };
 ticketSchema.statics.findByEvent = (event: { id: string, version: number }) => {
