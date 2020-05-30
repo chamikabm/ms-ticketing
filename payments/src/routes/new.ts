@@ -41,7 +41,7 @@ router.post('/api/payments',
             source: token,
         });
 
-        res.status(200).send({  });
+        res.status(201).send({  });
     });
 
 export { router as createChargeRouter };

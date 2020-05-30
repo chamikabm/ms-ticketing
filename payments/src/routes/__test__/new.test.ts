@@ -6,11 +6,14 @@ import { app } from '../../app';
 // import as well, here we will get the mocked import even if we import the real wrapper.
 import { Order } from '../../models/order';
 import { OrderStatus } from '@ms-ticketing/common';
+import { stripe } from '../../stripe';
 
 // This is same as importing the nats-wrapper.
 // jest.mock('../../nats-wrapper');
 // Instead of doing this on each file where it uses the nats-wrapper, we can
 // put this into `test` setup.ts tile.
+
+jest.mock('../../stripe');
 
 describe('New Route', () => {
     it('Should return 404 when purchasing an order that does not exist', async () => {
@@ -59,6 +62,43 @@ describe('New Route', () => {
             .send({
                 token: 'sdfsdf',
                 orderId: order.id,
-            }).expect(401);
+            }).expect(400);
+    });
+
+    it('Should return 201 with valid inputs', async () => {
+        const userId = mongoose.Types.ObjectId().toHexString();
+        const order = Order.build({
+            id: mongoose.Types.ObjectId().toHexString(),
+            userId,
+            version: 0,
+            price: 20,
+            status: OrderStatus.Created,
+        });
+        await order.save();
+
+        await request(app)
+            .post('/api/payments')
+            .set('Cookie', global.signin(userId))
+            .send({
+                token: 'tok_visa', // Stripe test token.
+                orderId: order.id,
+            }).expect(201);
+
+        // When we access the mock.calls inside the jest mocked function, we get a
+        // typescript warning, to by pass we can add //@ts-ignore above the call as above,
+        // or we can wrap the call as below.
+        // console.log((stripe.charges.create as jest.Mock).mock.calls);
+        // mock.calls returns an array of arrays which has the called sequence array and call param array
+        // Here mock.calls[0][0] means :
+        // mock.calls[0] - First time invocation
+        // mock.calls[0][0] - First time invocation input values
+
+        const chargeOptions = (stripe.charges.create as jest.Mock).mock.calls[0][0];
+        expect(chargeOptions.source).toEqual('tok_visa');
+        // Here 100 is there because stripe accept in the at most simple price unit(i.e for USD it's cents)
+        // i.e 1 USD === 100 USD in cents
+        expect(chargeOptions.amount).toEqual(order.price*100);
+        expect(chargeOptions.currency).toEqual('usd');
+
     });
 });
