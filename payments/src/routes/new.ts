@@ -5,6 +5,7 @@ import {
 } from '@ms-ticketing/common';
 import { body } from 'express-validator';
 import { Order } from '../models/order';
+import { Payment } from '../models/payment';
 import { stripe } from '../stripe';
 
 const router = express.Router();
@@ -35,11 +36,17 @@ router.post('/api/payments',
             throw new BadRequestError('Can`t pay for Cancelled order');
         }
 
-        await stripe.charges.create({
+        const charge = await stripe.charges.create({
             currency: 'usd',
             amount: order.price * 100, // Dollars in Cents
             source: token,
         });
+
+        const payment = new Payment({
+            orderId,
+            stripeId: charge.id,
+        });
+        await payment.save();
 
         res.status(201).send({  });
     });

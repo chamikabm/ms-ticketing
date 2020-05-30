@@ -7,6 +7,7 @@ import { app } from '../../app';
 import { Order } from '../../models/order';
 import { OrderStatus } from '@ms-ticketing/common';
 import { stripe } from '../../stripe';
+import { Payment } from '../../models/payment';
 
 // This is same as importing the nats-wrapper.
 // jest.mock('../../nats-wrapper');
@@ -107,7 +108,7 @@ describe('New Route', () => {
 
     });
 
-    it('Should return 201 with valid inputs with real stirpe.js', async () => {
+    it.only('Should return 201 with valid inputs with real stirpe.js', async () => {
         // Skipping this test as we are no longer using mock stripe.js
         const userId = mongoose.Types.ObjectId().toHexString();
         const price = Math.floor(Math.random() * 10000);
@@ -132,7 +133,12 @@ describe('New Route', () => {
         // Here 100 is there because stripe accept in the at most simple price unit(i.e for USD it's cents)
         // i.e 1 USD === 100 USD in cents
         const stripCharge = stripeCharges.data.find(charge => charge.amount === price * 100);
-
         expect(stripCharge).toBeDefined();
+
+        const payment = await Payment.findOne({
+            orderId: order.id,
+            stripeId: stripCharge!.id,
+        });
+        expect(payment).not.toBeNull();
     });
 });
