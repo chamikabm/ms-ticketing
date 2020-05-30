@@ -12,6 +12,12 @@ declare global {
 
 jest.mock('../nats-wrapper');
 
+// We need to define this key outside of the beforeAll, as this variable is
+// reference by a file stripe.ts which will be called before everything.
+
+// Ideally this key also need to be save as a Env key in local machine.
+process.env.STRIPE_KEY = 'sk_test_5RP3o3M1u0vVKksc9ANoQnnt00pV8BydgK';
+
 let mongo: any;
 beforeAll(async () => {
     process.env.JWT_KEY = 'asdfasdf';

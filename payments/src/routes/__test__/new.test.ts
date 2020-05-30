@@ -13,7 +13,11 @@ import { stripe } from '../../stripe';
 // Instead of doing this on each file where it uses the nats-wrapper, we can
 // put this into `test` setup.ts tile.
 
-jest.mock('../../stripe');
+// Here we are commenting following line, as we are trying to do real test with the stripe.
+// And we are not mocking the strip.ts, hence we have renamed strip.ts file
+// inside the __mocks__ folder to strip.ts.no_use
+//
+// jest.mock('../../stripe');
 
 describe('New Route', () => {
     it('Should return 404 when purchasing an order that does not exist', async () => {
@@ -65,7 +69,8 @@ describe('New Route', () => {
             }).expect(400);
     });
 
-    it('Should return 201 with valid inputs', async () => {
+    it.skip('Should return 201 with valid inputs with mock stirpe.js', async () => {
+        // Skipping this test as we are no longer using mock stripe.js
         const userId = mongoose.Types.ObjectId().toHexString();
         const order = Order.build({
             id: mongoose.Types.ObjectId().toHexString(),
@@ -100,5 +105,34 @@ describe('New Route', () => {
         expect(chargeOptions.amount).toEqual(order.price*100);
         expect(chargeOptions.currency).toEqual('usd');
 
+    });
+
+    it('Should return 201 with valid inputs with real stirpe.js', async () => {
+        // Skipping this test as we are no longer using mock stripe.js
+        const userId = mongoose.Types.ObjectId().toHexString();
+        const price = Math.floor(Math.random() * 10000);
+        const order = Order.build({
+            id: mongoose.Types.ObjectId().toHexString(),
+            userId,
+            version: 0,
+            price,
+            status: OrderStatus.Created,
+        });
+        await order.save();
+
+        await request(app)
+            .post('/api/payments')
+            .set('Cookie', global.signin(userId))
+            .send({
+                token: 'tok_visa', // Stripe test token.
+                orderId: order.id,
+            }).expect(201);
+
+        const stripeCharges = await stripe.charges.list({ limit : 50 });
+        // Here 100 is there because stripe accept in the at most simple price unit(i.e for USD it's cents)
+        // i.e 1 USD === 100 USD in cents
+        const stripCharge = stripeCharges.data.find(charge => charge.amount === price * 100);
+
+        expect(stripCharge).toBeDefined();
     });
 });
