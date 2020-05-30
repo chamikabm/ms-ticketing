@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 declare global {
     namespace NodeJS {
         interface Global {
-            signin(): string[];
+            signin(id?: string): string[];
         }
     }
 }
@@ -42,10 +42,10 @@ afterAll(async () => {
 
 // Without this global thing, you can move these util test classes to a
 // separate helper file.
-global.signin = () => {
+global.signin = (id?: string) => {
     // Build a JWT payload. { id, email }
     const payload = {
-        id: new mongoose.Types.ObjectId().toHexString(), // Every time we call this, it will generate a new Id.
+        id: id ||  mongoose.Types.ObjectId().toHexString(), // Every time we call this, it will generate a new Id.
         email: 'test@test.com',
     };
 

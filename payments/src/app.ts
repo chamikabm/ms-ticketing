@@ -4,6 +4,7 @@ import { json } from 'body-parser';
 import cookieSession from 'cookie-session';
 
 import { NotFoundError, errorHandler, currentUser } from '@ms-ticketing/common';
+import { createChargeRouter } from './routes/new';
 
 
 const app = express();
@@ -40,6 +41,8 @@ app.use(cookieSession({
     secure: process.env.NODE_ENV !== 'test',
 }));
 app.use(currentUser);
+
+app.use(createChargeRouter);
 
 
 // Send 404 for all not found routes, 'all' for all type of HTTP methods, GET, POST, DELETE etc.
