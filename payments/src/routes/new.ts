@@ -5,6 +5,7 @@ import {
 } from '@ms-ticketing/common';
 import { body } from 'express-validator';
 import { Order } from '../models/order';
+import { stripe } from '../stripe';
 
 const router = express.Router();
 
@@ -33,6 +34,12 @@ router.post('/api/payments',
         if(order.status === OrderStatus.Cancelled) {
             throw new BadRequestError('Can`t pay for Cancelled order');
         }
+
+        await stripe.charges.create({
+            currency: 'usd',
+            amount: order.price * 100, // Dollars in Cents
+            source: token,
+        });
 
         res.status(200).send({  });
     });
