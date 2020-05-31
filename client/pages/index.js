@@ -1,10 +1,17 @@
 // import buildClient from '../api/build-client';
 
+import Link from 'next/link';
+
 const LandingPage = ({ currentUser, tickets }) => {
   const rows = tickets.map(({ id, title, price }) => (
       <tr key={id}>
         <td>{title}</td>
         <td>{price}</td>
+        <td>
+          <Link href={'/tickets/[ticketId]'} as={`/tickets/${id}`}>
+            <a>View</a>
+          </Link>
+        </td>
       </tr>
   ));
 
@@ -16,6 +23,7 @@ const LandingPage = ({ currentUser, tickets }) => {
             <tr>
               <th>Title</th>
               <th>Price</th>
+              <th>Link</th>
             </tr>
           </thead>
           <tbody>
