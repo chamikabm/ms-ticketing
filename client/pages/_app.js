@@ -7,7 +7,10 @@ const AppComponent =  ({ Component, pageProps, currentUser }) => {
   return (
       <div>
         <Header currentUser={currentUser} />
-        <Component {...pageProps} />
+        <Component
+            currentUser={currentUser}
+            {...pageProps}
+        />
       </div>
   );
 };
@@ -31,7 +34,10 @@ AppComponent.getInitialProps = async appContext => {
   if(appContext.Component.getInitialProps) {
     // We manually invoke the respective Component's getInitialProps method by passing
     // component's context which comes with the AppContext as ctx.
-    pageProps = await appContext.Component.getInitialProps(appContext.ctx);
+    // Also additionally we pass the client and the currentUser to respective components,
+    // so that those components does not required to recreate client and fetch currentUser again.
+    // Example visit index.js (i.e LandingPage) component.
+    pageProps = await appContext.Component.getInitialProps(appContext.ctx, client, data.currentUser);
   }
 
   return {

@@ -1,4 +1,4 @@
-import buildClient from '../api/build-client';
+// import buildClient from '../api/build-client';
 
 const LandingPage = ({ currentUser }) => {
   return <h1>{currentUser ? 'You are singed in.' : 'You are not singed in.' }</h1>;
@@ -41,7 +41,9 @@ const LandingPage = ({ currentUser }) => {
  *
  * @returns {{}}
  */
-LandingPage.getInitialProps = async (context) => {
+LandingPage.getInitialProps = async (context, client, currentUser) => {
+  // NOTE: Here we are receiving additional client and currentUser which passed from
+  // the AppComponent.
 
   // // This API call happens in the Server and Browser Based on how we render the page.
   // // 1. Page refresh --> call from server
@@ -83,10 +85,17 @@ LandingPage.getInitialProps = async (context) => {
   //   return response.data;
   // }
   // Instead of above code, following code made using above as a reusable code.
-  const client = buildClient(context);
-  const { data } = await client.get('/api/users/currentuser');
 
-  return data;
+  // Since we already fetch the currentUser inside the 'AppComponent' we are not going to
+  // do that again in the LandingPage as well, hence we commented the following code and
+  // return an empty object.
+  //
+  // const client = buildClient(context);
+  // const { data } = await client.get('/api/users/currentuser');
+  //
+  // return data;
+
+  return {};
 };
 
 
