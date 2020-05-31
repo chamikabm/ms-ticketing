@@ -1,6 +1,7 @@
 // This is a wildcard page which uses special next.js syntax for the page name.
 // For navigate to this page please refer usage of this page inside the index.js (i e: LandingPage)
 import useRequest from '../../hooks/use-request';
+import Router from 'next/router';
 
 const TicketShow = ({ ticket }) => {
 
@@ -10,7 +11,7 @@ const TicketShow = ({ ticket }) => {
     body: {
       ticketId: ticket.id,
     },
-    onSuccess: (order) => console.log(order),
+    onSuccess: (order) => Router.push('/orders/[orderId]', `/orders/${order.id}`),
   });
 
   return (
@@ -31,6 +32,7 @@ TicketShow.getInitialProps = async (context, client, currentUser) => {
   const { ticketId } = context.query;
   const { data } = await client.get(`/api/tickets/${ticketId}`);
 
+  // This ticket will be available in the above TicketShow as input props.
   return { ticket: data };
 };
 
