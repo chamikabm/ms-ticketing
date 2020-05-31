@@ -1,7 +1,29 @@
 // import buildClient from '../api/build-client';
 
-const LandingPage = ({ currentUser }) => {
-  return <h1>{currentUser ? 'You are singed in.' : 'You are not singed in.' }</h1>;
+const LandingPage = ({ currentUser, tickets }) => {
+  const rows = tickets.map(({ id, title, price }) => (
+      <tr key={id}>
+        <td>{title}</td>
+        <td>{price}</td>
+      </tr>
+  ));
+
+  return (
+      <div>
+        <h1>Tickets</h1>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+          {rows}
+          </tbody>
+        </table>
+      </div>
+  );
 };
 
 /**
@@ -95,7 +117,9 @@ LandingPage.getInitialProps = async (context, client, currentUser) => {
   //
   // return data;
 
-  return {};
+  const { data } = await client.get('/api/tickets');
+
+  return { tickets: data };
 };
 
 
