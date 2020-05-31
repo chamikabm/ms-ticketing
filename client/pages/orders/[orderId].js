@@ -1,7 +1,18 @@
 import { useEffect, useState } from 'react';
+import StripeCheckout from 'react-stripe-checkout';
+import useRequest from '../../hooks/use-request';
+import Router from 'next/router';
 
-const OrderShow = ({ order }) => {
+const OrderShow = ({ order, currentUser }) => {
   const [timeLeft, setTimeLeft] = useState(0);
+  const { doRequest, errors } = useRequest({
+    url: '/api/payments',
+    method: 'post',
+    body: {
+      orderId: order.id,
+    },
+    onSuccess: (payment) => console.log(payment),
+  });
 
   useEffect(() => {
     const findTimeLeft = () => {
@@ -37,6 +48,16 @@ const OrderShow = ({ order }) => {
   return (
       <div>
         Time left to pay: {timeLeft} seconds
+        <StripeCheckout
+            token={(token) => doRequest({ token: token.id })}
+            stripeKey={'pk_test_TiqYdawHGinlnASWTXqs3nbv00mrzTdDC7'}
+            // Since stripe works smallest amount of the currency, as we are using USD as out
+            // currency we need to convert the ticket amount to USD cents by multiplying the price
+            // by 100
+            amount={order.ticket.price*100}
+            email={currentUser.email}
+        />
+        {errors}
       </div>
   );
 };
