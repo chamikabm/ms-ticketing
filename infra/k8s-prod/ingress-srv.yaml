@@ -7,7 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: 'true' # This enables to have regex in spec>rules>http>paths>path
 spec:
   rules:
-    - host: ticketing.dev
+    - host: ticketing-prod.dev
       http:
         paths:
           - path: /api/payments/?(.*)
