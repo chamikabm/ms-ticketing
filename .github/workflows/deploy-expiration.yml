@@ -1,0 +1,25 @@
+name: deploy-expiration
+
+on:
+  push:
+    branches: 
+      - master
+    paths: 
+      - 'expiration/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: cd expiration && docker build -t chamika/expiration .
+      - run: docker login -u $DOCKER_HUB_USER_NAME -p $DOCKER_HUB_PASSWORD
+        env:
+          DOCKER_HUB_USER_NAME: ${{ secrets.DOCKER_HUB_USER_NAME }}
+          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      - run: docker push chamika/expiration
+      - uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DITIGALOCEAN_ACCESS_TOKEN }}
+      - run: doctl kubernetes cluster kubeconfig save ticketing
+      - run: kubectl rollout restart deployment expiration-depl
